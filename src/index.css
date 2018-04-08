@@ -1,0 +1,76 @@
+
+
+.card {
+    border-radius: 5px;
+    font-weight: bold;
+    padding: 14px 10px;
+    display: inline-block;
+    margin: 3px;
+    font-family: sans-serif;
+    font-size: 25px;
+    color: #fff;
+    width: 30px;
+    height: 30px;
+    line-height: 30px;
+    text-align: center;
+    cursor: default;
+}
+
+.card.clickable {
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+
+    transition: transform 0.2s ease;
+    transform: scale(1);
+}
+
+.card.clickable:hover {
+    cursor: pointer;
+    /*background-color: #ccc;*/
+
+    filter: saturate(150%);
+
+    transition: background-color 0.3s ease;
+
+    transform: scale(1.2);
+    transition: transform 0.3s ease;
+    
+    /*transition: margin 0.3s ease;
+    transition: height 0.3s ease;
+    transition: line-height 0.3s ease;
+    transition: width 0.3s ease;
+
+    margin: 0px;
+    height: 36px;
+    line-height: 36px;
+    width: 36px;*/
+    /*animation-name: color_change;
+    animation-duration: 1500ms;
+    animation-iteration-count: 1;
+    animation-direction: alternate;*/
+}
+
+.hearts {
+    background-color: #f44;
+    
+}
+
+.diamonds {
+    background-color: #38f;
+}
+
+.clubs {
+    background-color: #3c5;
+}
+
+.spades {
+    background-color: #383838;
+}
+
+.unknown {
+    color: #000;
+    background-color: #fff;
+    border-color: #333;
+    border-width: 1px;
+    border-style: solid;
+}
