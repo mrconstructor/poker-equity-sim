@@ -1,7 +1,49 @@
 
+li.done {
+    font-style: italic;
+    text-decoration: line-through;
+}
+
+.board {
+    background-color: #182;
+    border-radius: 150px;
+    padding: 50px 80px;
+    border-width: 10px;
+    border-style: solid;
+    border-color: #330;
+}
+
+.game-room {
+    /*background-color: #031;*/
+    padding: 40px;
+    background: linear-gradient(to bottom right, #053, #035);
+}
+
+.street {
+    display: inline-block;
+    padding: 15px;
+}
+
+.street-name {
+    text-align: center;
+    font-weight: bold;
+    /*color: white;*/
+    padding-bottom: 20px;
+}
+
+.player-seat {
+    display: inline-block;
+    padding: 20px 70px;
+}
+
+.player-name {
+    text-align: center;
+    color: white;
+    padding: 5px;
+}
 
 .card {
-    border-radius: 5px;
+    border-radius: 7px;
     font-weight: bold;
     padding: 14px 10px;
     display: inline-block;
@@ -14,6 +56,9 @@
     line-height: 30px;
     text-align: center;
     cursor: default;
+    border-width: 3px;
+    border-style: solid;
+    border-color: white;
 }
 
 .card.clickable {
@@ -71,6 +116,5 @@
     color: #000;
     background-color: #fff;
     border-color: #333;
-    border-width: 1px;
     border-style: solid;
 }

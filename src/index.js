@@ -4,47 +4,41 @@ import './index.css';
 
 
 class Board extends React.Component {
-  constructor(props) {
-    super(props);
-  }
-
+  
   render() {
     return (
-      <div>
-        <div>
+    
+      <div className="board">
 
-            <div>
-            Flop:
-            {(this.state.dealerDeck && this.state.dealerDeck.deck) ? [
-              this.renderCard(this.state.boardCards[0]),
-              this.renderCard(this.state.boardCards[1]),
-              this.renderCard(this.state.boardCards[2]),
-              ] : ""}
-            </div>
+        <div className="street">
+          <div className="street-name">Flop:</div>
+            {(this.props.cards.length >= 3) ? [
+              renderCard(this.props.cards[0]),
+              renderCard(this.props.cards[1]),
+              renderCard(this.props.cards[2]),
+              ] : [
+                renderCard(-1),
+                renderCard(-1),
+                renderCard(-1)
+                ]}
+        </div>
 
-            <div>
-            Turn:
-            {(this.state.dealerDeck && this.state.dealerDeck.deck) ? [
-              this.renderCard(this.state.boardCards[3])
-              ] : ""}
-            </div>
+        <div className="street">
+          <div className="street-name">Turn:</div>
+            {(this.props.cards.length >= 4) ? [
+              renderCard(this.props.cards[3]),
+              ] : renderCard(-1)}
+        </div>
 
-            <div>
-            River:
-            {(this.state.dealerDeck && this.state.dealerDeck.deck) ? [
-              this.renderCard(this.state.boardCards[4])
-              ] : ""}
-            </div>
+        <div className="street">
+          <div className="street-name">River:</div>
+            {(this.props.cards.length >= 5) ? [
+              renderCard(this.props.cards[4]),
+              ] : renderCard(-1)}
+        </div>
 
-          </div>
-
-          <div>
-            <div>Deck {getRandomInt(0, 0)}</div>
-
-            <div><button onClick={() => this.shuffle()}>Shuffle</button></div>
-            <div>{cards}</div>
-          </div>
       </div>
+
     );
   }
 }
@@ -78,7 +72,7 @@ class Simulator extends React.Component {
 
   dealNew() {
     this.dealerDeck = this.getShuffled(this.getNewDeck());
-    this.playerHands = Array(this.state.numPlayers).fill([]);
+    this.playerHands = Array(this.state.numPlayers);
     this.boardCards = [];
     this.nextCardIndex = 0;
 
@@ -86,13 +80,18 @@ class Simulator extends React.Component {
     console.log("Hole cards: " + this.state.numHoleCards);
     console.log("num players: " + this.playerHands.length);
 
+    for (let i = 0; i < this.playerHands.length; i++) {
+      this.playerHands[i] = [];
+    }
+
+    console.log("playerHands: ", this.playerHands);
     for (let i = 0; i < this.state.numHoleCards; i++) {
       for (let j = 0; j < this.playerHands.length; j++) {
-        this.playerHands[j].push(this.dealerDeck[nextCardIndex]);
+        let card = this.dealerDeck[this.nextCardIndex];
+        this.playerHands[j].push(card);
         this.nextCardIndex++;
       }
     }
-    console.log("Dealt player hands, dealing flop turnn river");
 
     this.dealCommonCards(3);
     this.dealCommonCards(1);
@@ -122,7 +121,19 @@ class Simulator extends React.Component {
 
     const cards = this.state.deck.map((card, index) => {
       return (
-        <span key={index}>{this.renderCard(card)}</span>
+        <span key={index}>{renderCard(card)}</span>
+      );
+    });
+
+    const players = this.state.playerHands.map((player, index) => {
+      return (
+        <div key={index} className="player-seat">
+          <div className="player-name">Player {index + 1}</div>
+          <div>
+            {renderCard(player[0])}
+            {renderCard(player[1])}
+          </div>
+        </div>
       );
     });
 
@@ -130,13 +141,16 @@ class Simulator extends React.Component {
       <div>
         <h1>Next steps</h1>
         <ul>
-          <li>Press to simulate one deal (player 1 and 2, as well as flop turn river</li>
+          <li class="done">Press to simulate one deal (player 1 and 2, as well as flop turn river</li>
           <li>Tell who won (only counting high cards)</li>
+          <li>Support some more hands, one pair, two pairs, etc...</li>
+          <li>Separate dealing hole cards and board</li>
+          <li>Allow rerunning the board deal (after reshuffling remaining cards)</li>
 
           <li>Let user pick hands for both players</li>
         </ul>
         <div>
-          Flop: {this.renderCard(-1)} <input /><input />
+          Flop: {renderCard(-1)} <input /><input />
         </div>
         <div>
 
@@ -146,7 +160,19 @@ class Simulator extends React.Component {
           <button onClick={this.stop}>Stop</button>
           <button onClick={() => this.dealNew()}>Deal hand</button>
 
+
+          <div className="game-room">
+            <div>{players}</div>
+
+            <Board cards={this.boardCards} />
+          </div>
           
+          <div>
+            <div>Deck {getRandomInt(0, 0)}</div>
+
+            <div><button onClick={() => this.shuffle()}>Shuffle</button></div>
+            <div>{cards}</div>
+          </div>
         </div>
       </div>
     );
@@ -231,70 +257,8 @@ class Simulator extends React.Component {
     return shuffled;
   }
 
-  renderCard(cardIndex) {
-    const card = this.indexToCardName(cardIndex);
+  
 
-    const classes = {
-      'h': 'hearts',
-      'd': 'diamonds',
-      'c': 'clubs',
-      's': 'spades',
-    }
-
-    let cardClass;
-    let cardValue;
-    if (cardIndex < 0) {
-      cardClass = 'unknown';
-      cardValue = '?';
-    } else {
-      cardClass = classes[card[1]];
-      cardValue = card[0];
-    }
-
-
-    return (
-      <span className={cardClass + " card clickable"}>{cardValue}</span>
-    );
-  }
-
-  indexToSuit(i) {
-    if (i >= 0 && i <= 12) {
-      return 'h';
-    } else if (i >= 13 && i <= 25) {
-      return 'd';
-    } else if (i >= 26 && i <= 38) {
-      return 'c';
-    } else {
-      return 's';
-    }
-  }
-
-  indexToCardName(i) {
-    if (i < 0 || i > 51) {
-      console.log("error, invalid card index");
-    }
-
-    // 0-12 hearts, 13-25 diamonds, 26-38 clubs, 39-51 spades
-    let suit;
-    let value;
-    if (i >= 0 && i <= 12) {
-      suit = 'h';
-      value = i;
-    } else if (i >= 13 && i <= 25) {
-      suit = 'd';
-      value = i - 13;
-    } else if (i >= 26 && i <= 38) {
-      suit = 'c';
-      value = i - 26;
-    } else {
-      suit = 's';
-      value = i - 39;
-    }
-
-    const valueNotation = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A'];
-
-    return [valueNotation[value], suit];
-  }
 }
 
 ReactDOM.render(
@@ -302,6 +266,72 @@ ReactDOM.render(
   document.getElementById('root')
 );
 
+
+function renderCard(cardIndex, cardKey) {
+  const card = indexToCardName(cardIndex);
+
+  const classes = {
+    'h': 'hearts',
+    'd': 'diamonds',
+    'c': 'clubs',
+    's': 'spades',
+  }
+
+  let cardClass;
+  let cardValue;
+  if (cardIndex < 0) {
+    cardClass = 'unknown';
+    cardValue = '?';
+  } else {
+    cardClass = classes[card[1]];
+    cardValue = card[0];
+  }
+
+  return (
+    <span key={cardKey} className={cardClass + " card clickable"}>{cardValue}</span>
+  );
+}
+
+
+
+function indexToSuit(i) {
+  if (i >= 0 && i <= 12) {
+    return 'h';
+  } else if (i >= 13 && i <= 25) {
+    return 'd';
+  } else if (i >= 26 && i <= 38) {
+    return 'c';
+  } else {
+    return 's';
+  }
+}
+
+function indexToCardName(i) {
+  if (i < 0 || i > 51) {
+    console.log("error, invalid card index: " + i);
+  }
+
+  // 0-12 hearts, 13-25 diamonds, 26-38 clubs, 39-51 spades
+  let suit;
+  let value;
+  if (i >= 0 && i <= 12) {
+    suit = 'h';
+    value = i;
+  } else if (i >= 13 && i <= 25) {
+    suit = 'd';
+    value = i - 13;
+  } else if (i >= 26 && i <= 38) {
+    suit = 'c';
+    value = i - 26;
+  } else {
+    suit = 's';
+    value = i - 39;
+  }
+
+  const valueNotation = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A'];
+
+  return [valueNotation[value], suit];
+}
 
 function getRandomInt(min, max) {
   return Math.floor(Math.random() * (max - min + 1) + min);
